@@ -1,0 +1,628 @@
+    <!DOCTYPE html>
+    <html lang="ru">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Адаптивная привязка текста к изображению</title>
+        <style>
+            @font-face {
+                font-family: 'KLUBU';
+                src: url("{{ url_for('static', filename='fonts/KLUBU.ttf') }}") format('truetype');
+            }
+
+            @font-face {
+                font-family: 'SSegment';
+                src: url("{{ url_for('static', filename='fonts/SSegment.ttf') }}") format('truetype');
+            }
+
+            body {
+                background: black;
+                animation: backgroundMove 15s ease infinite;
+            }
+            
+            /* Движение фона */
+            @keyframes backgroundMove {
+                0% { background-position: 0 0; }
+                100% { background-position: 100% 100%; }
+            }
+
+            img {
+                width: 100%;
+                display: block;
+            }
+
+            /* Общие стили для прямоугольников */
+            .als-rectangle {
+                position: absolute;
+                display: block;
+                width: 9.7vw; /* Задайте желаемую ширину */
+                height: 2.5vh; /* Задайте желаемую высоту */
+                left: 18.9%; /* Центрирование по горизонтали */
+                transform: translate(-50%, -50%); /* Центрирование по вертикали */
+                box-sizing: border-box;
+            }
+            
+
+            @keyframes blink {
+                0% { opacity: 1; }
+                50% { opacity: 0; }
+                100% { opacity: 1; }
+            }
+
+            .blink {
+                animation: blink 1s infinite;
+            }
+
+            /* Специфичные стили */
+            .als-white {
+                background-color: white;
+                top: 46.5%; /* Отступ сверху */
+            }
+
+            .als-red {
+                background-color: red;
+                top: 42.5%; /* Отступ сверху */
+            }
+
+            .als-yellowred {
+                background: linear-gradient(to bottom, yellow 50%, red 50%);
+                top: 38.5%; /* Отступ сверху */
+            }
+
+            .als-yellow {
+                background-color: yellow;
+                top: 34.5%; /* Отступ сверху */
+            }
+
+            .als-green {
+                background-color: green;
+                top: 30.5%; /* Отступ сверху */
+            }
+
+            .container {
+                width: 100%;
+                position: relative;
+                text-align: center;
+                color: yellow;
+                font-family: Arial, sans-serif;
+            }
+
+            .coordinate, .time, .distance, .speed, .speedLimit, .svetofor, .signal, .tm, .ur, .ek, .np, .uscr, .mode, .station {
+                font-family: 'KLUBU', Arial, sans-serif;
+                position: absolute;
+                transform: translate(-50%, -50%);
+                font-size: 2.9vw;
+            }
+
+            .glow-0 { text-shadow: none; }
+            .glow-1 { text-shadow: 0 0 4px #ffff00; }
+            .glow-2 { text-shadow: 0 0 6px #ffff00; }
+            .glow-3 { text-shadow: 0 0 8px #ffff00; }
+            .glow-4 { text-shadow: 0 0 10px #ffff00; }
+            .glow-5 { text-shadow: 0 0 12px #ffff00; }
+            .glow-6 { text-shadow: 0 0 14px #ffff00; }
+
+            .glow-0-speedLimit { text-shadow: none; }
+            .glow-1-speedLimit { text-shadow: 0 0 8px #ff0000, 0 0 4px #ff0000; }
+            .glow-2-speedLimit { text-shadow: 0 0 10px #ff0000, 0 0 6px #ff0000; }
+            .glow-3-speedLimit { text-shadow: 0 0 12px #ff0000, 0 0 8px #ff0000; }
+            .glow-4-speedLimit { text-shadow: 0 0 14px #ff0000, 0 0 10px #ff0000; }
+            .glow-5-speedLimit { text-shadow: 0 0 16px #ff0000, 0 0 12px #ff0000; }
+            .glow-6-speedLimit { text-shadow: 0 0 18px #ff0000, 0 0 14px #ff0000; }
+
+            .speed, .speedLimit {
+                font-style: italic;
+                font-family: 'SSegment', Arial, sans-serif;
+                font-size: 8vw;
+            }
+
+            .coordinate {
+                top: 10.7%;
+                left: 33.4%;
+                letter-spacing: 0.1em;
+            }
+
+            .station {
+                top: 10.7%;
+                left: 53%;
+            }
+
+            .time {
+                top: 10.7%;
+                left: 72.3%;
+                letter-spacing: 0.09em;
+            }
+
+            .distance {
+                top: 56.4%;
+                left: 20.5%;
+                letter-spacing: 0.11em;
+            }
+
+            .svetofor {
+                top: 56.4%;
+                left: 37%;
+            }
+
+            .signal {
+                top: 56.4%;
+                left: 82%;
+            }
+
+            .tm {
+                left: 19%;
+                top: 63%;
+            }
+
+            .ur {
+                left: 30%;
+                top: 63%;
+            }
+
+            .ek {
+                left: 49%;
+                top: 63%;
+            }
+
+            .np {
+                left: 58%;
+                top: 63%;
+            }
+
+            .uscr {
+                left: 68%;
+                top: 63%;
+            }
+
+            .uscr {
+                left: 68%;
+                top: 63%;
+            }
+
+            .mode {
+                left: 86.5%;
+                top: 5.6%;
+                font-family: Arial, sans-serif;
+                font-size: 4vw
+            }
+
+            .speed {
+                top: 28.6%;
+                left: 55.5%;
+                letter-spacing: 0.07em;
+            }
+
+            .speedLimit {
+                top: 35%;
+                left: 55.5%;
+                color: red;
+                letter-spacing: 0.07em;
+            }
+
+            button {
+                background: transparent;
+                border: none !important;
+                font-size:0;
+                position: absolute;
+                transform: translate(-50%, -50%);
+            }
+
+            :root {
+                --top-1: 82%;
+                --top-2: 77%;
+                --top-3: 73%;
+                --left-1: 66%;
+                --left-2: 75%;
+                --left-3: 84%;
+            }
+
+            .button-0 { top: var(--top-1); left: 56.5%; }
+            .button-1 { top: var(--top-1); left: var(--left-1); }
+            .button-2 { top: var(--top-1); left: var(--left-2); }
+            .button-3 { top: var(--top-1); left: var(--left-3); }
+            .button-4 { top: var(--top-2); left: var(--left-1); }
+            .button-5 { top: var(--top-2); left: var(--left-2); }
+            .button-6 { top: var(--top-2); left: var(--left-3); }
+            .button-7 { top: var(--top-3); left: var(--left-1); }
+            .button-8 { top: var(--top-3); left: var(--left-2); }
+            .button-9 { top: var(--top-3); left: var(--left-3); }
+            .button-plus { left: 56%; top: 72.5%; }
+            .button-minus { left: 56%; top: 77.5%; }
+            .button-up { left: 48%; top: 72.5%; }
+            .button-down { left: 48%; top: 77.5%; }
+            .button-clear { left: 48%; top: 82.5%; }
+            .button-k { left: 26%; top: 82.5%; }
+            .button-p { left: 26%; top: 72.5%; }
+            .button-i { left: 20%; top: 77.5%; transition: text-shadow 0.3s ease-in-out; }
+            .button-l { left: 34%; top: 77.5%; }
+            .button-rmp { left: 26%; top: 88.5%; }
+
+            .kasseta {
+                display: none;
+                width: 5%; /* Измените ширину по своему усмотрению */
+                max-width: 300px; /* Максимальная ширина изображения */
+                height: auto; /* Автоматическая высота для сохранения пропорций */
+                position: absolute;
+                top: 12.3%; /* Примерное расположение сверху */
+                left: 86.3%; /* Примерное расположение слева */
+                transform: translate(-50%, -50%); /* Центрирование изображения */
+            }
+            
+			.speedL_m, .speedT_m, .speed_m {
+				width: 5%;
+				max-width: 300px;
+				height: auto;
+				position: absolute;
+				transform: translate(-50%, -50%);
+			}
+            
+            .vigillance {
+                display: none;
+				width: 10.5%;
+				max-width: 300px;
+				height: auto;
+				position: absolute;
+                left: 85%;
+                top: 19%;
+				transform: translate(-50%, -50%);
+                transparent: 0.5;
+            }
+
+			/* Примерные значения left и top изменяются для каждой скорости */
+			.speed_0 { left: 48%; top: 42.3%; }
+			.speed_5 { left: 46.3%; top: 41.9%; }
+			.speed_10 { left: 44.6%; top: 41.3%; }
+			.speed_15 { left: 43%; top: 40.8%; }
+			.speed_20 { left: 41.2%; top: 40.2%; }
+			.speed_25 { left: 39.6%; top: 39.5%; }
+			.speed_30 { left: 38%; top: 38.5%; }
+			.speed_35 { left: 36.6%; top: 37.4%; }
+			.speed_40 { left: 35.3%; top: 36.3%; }
+			.speed_45 { left: 34.3%; top: 35%; }
+			.speed_50 { left: 33.9%; top: 33.5%; }
+			.speed_55 { left: 33.7%; top: 32%; }		
+			.speed_60 { left: 34%; top: 30.4%; }
+			.speed_65 { left: 34.4%; top: 29%; }
+			.speed_70 { left: 35.3%; top: 27.7%; }
+			.speed_75 { left: 36.5%; top: 26.6%; }
+			.speed_80 { left: 37.9%; top: 25.5%; }
+			.speed_85 { left: 39.5%; top: 24.5%; }
+			.speed_90 { left: 41.2%; top: 23.6%; }
+			.speed_95 { left: 42.9%; top: 22.9%; }
+			.speed_100 { left: 44.6%; top: 22.5%; }
+			.speed_105 { left: 46.3%; top: 22%; }
+			.speed_110 { left: 48%; top: 21.6%; }
+			.speed_115 { left: 49.7%; top: 21.3%; }
+			.speed_120 { left: 51.5%; top: 21.1%; }
+			.speed_125 { left: 53.2%; top: 21%; }
+			.speed_130 { left: 55%; top: 21%; }
+			.speed_135 { left: 56.7%; top: 21.1%; }
+			.speed_140 { left: 58.4%; top: 21.3%; }
+			.speed_145 { left: 60.1%; top: 21.5%; }
+			.speed_150 { left: 61.7%; top: 21.8%; }
+			.speed_155 { left: 63.5%; top: 22.2%; }
+			.speed_160 { left: 65.2%; top: 22.5%; }
+			.speed_165 { left: 67%; top: 23%; }
+			.speed_170 { left: 68.7%; top: 23.7%; }
+			.speed_175 { left: 70.1%; top: 24.5%; }
+			.speed_180 { left: 71.8%; top: 25.5%; }
+			.speed_180 { left: 71.8%; top: 25.5%; }
+			.speed_185 { left: 73%; top: 26.6%; }
+			.speed_190 { left: 74.3%; top: 27.6%; }
+			.speed_195 { left: 75.3%; top: 29%; }
+			.speed_200 { left: 76%; top: 30.4%; }
+			.speed_205 { left: 76%; top: 31.9%; }
+			.speed_210 { left: 75.9%; top: 33.5%; }
+			.speed_215 { left: 75.4%; top: 34.9%; }
+			.speed_220 { left: 74.4%; top: 36.1%; }
+			.speed_225 { left: 73.2%; top: 37.5%; }
+			.speed_230 { left: 71.8%; top: 38.5%; }
+			.speed_235 { left: 70.3%; top: 39.5%; }
+			.speed_240 { left: 68.6%; top: 40.3%; }
+			.speed_245 { left: 66.8%; top: 41%; }
+			.speed_250 { left: 65%; top: 41.5%; }
+			.speed_255 { left: 63.6%; top: 41.9%; }
+			.speed_260 { left: 62%; top: 42.3%; }
+
+			.speedL_0 { left: 47%; top: 44%; }
+			.speedL_5 { left: 45%; top: 43.5%; }
+			.speedL_10 { left: 43%; top: 43%; }
+			.speedL_15 { left: 41%; top: 42.3%; }
+			.speedL_20 { left: 39%; top: 41.6%; }
+			.speedL_25 { left: 37.1%; top: 40.6%; }
+			.speedL_30 { left: 35.4%; top: 39.5%; }
+			.speedL_35 { left: 33.9%; top: 38.3%; }
+			.speedL_40 { left: 32.6%; top: 36.9%; }
+			.speedL_45 { left: 31.7%; top: 35.3%; }
+			.speedL_50 { left: 31.1%; top: 33.7%; }
+			.speedL_55 { left: 30.8%; top: 32%; }		
+			.speedL_60 { left: 31%; top: 30.3%; }
+			.speedL_65 { left: 31.7%; top: 28.5%; }
+			.speedL_70 { left: 32.7%; top: 27.2%; }
+			.speedL_75 { left: 34%; top: 25.7%; }
+			.speedL_80 { left: 35.5%; top: 24.5%; }
+			.speedL_85 { left: 37.2%; top: 23.3%; }
+			.speedL_90 { left: 39%; top: 22.4%; }
+			.speedL_95 { left: 41%; top: 21.6%; }
+			.speedL_100 { left: 43%; top: 20.9%; }
+			.speedL_105 { left: 45%; top: 20.3%; }
+			.speedL_110 { left: 46.9%; top: 20%; }
+			.speedL_115 { left: 48.9%; top: 19.6%; }
+			.speedL_120 { left: 50.9%; top: 19.4%; }
+			.speedL_125 { left: 52.8%; top: 19.3%; }
+			.speedL_130 { left: 54.8%; top: 19.2%; }
+			.speedL_135 { left: 56.8%; top: 19.2%; }
+			.speedL_140 { left: 58.8%; top: 19.4%; }
+			.speedL_145 { left: 60.9%; top: 19.6%; }
+			.speedL_150 { left: 62.7%; top: 19.9%; }
+			.speedL_155 { left: 64.7%; top: 20.2%; }
+			.speedL_160 { left: 66.8%; top: 20.9%; }
+			.speedL_165 { left: 68.7%; top: 21.5%; }
+			.speedL_170 { left: 70.7%; top: 22.4%; }
+			.speedL_175 { left: 72.5%; top: 23.3%; }
+			.speedL_180 { left: 74.2%; top: 24.5%; }
+			.speedL_185 { left: 75.8%; top: 25.7%; }
+			.speedL_190 { left: 77.1%; top: 27.1%; }
+			.speedL_195 { left: 78%; top: 28.6%; }
+			.speedL_200 { left: 78.6%; top: 30.3%; }
+			.speedL_205 { left: 78.9%; top: 32%; }
+			.speedL_210 { left: 78.6%; top: 33.7%; }
+			.speedL_215 { left: 78%; top: 35.3%; }
+			.speedL_220 { left: 77.1%; top: 36.8%; }
+			.speedL_225 { left: 75.8%; top: 38.2%; }
+			.speedL_230 { left: 74.2%; top: 39.5%; }
+			.speedL_235 { left: 72.5%; top: 40.6%; }
+			.speedL_240 { left: 70.7%; top: 41.5%; }
+			.speedL_245 { left: 68.8%; top: 42.4%; }
+			.speedL_250 { left: 66.8%; top: 43%; }
+			.speedL_255 { left: 64.8%; top: 43.6%; }
+			.speedL_260 { left: 62.8%; top: 44%; }
+
+			.speedT_0 { left: 47%; top: 44%; }
+			.speedT_5 { left: 45%; top: 43.5%; }
+			.speedT_10 { left: 43%; top: 43%; }
+			.speedT_15 { left: 41%; top: 42.3%; }
+			.speedT_20 { left: 39%; top: 41.6%; }
+			.speedT_25 { left: 37.1%; top: 40.6%; }
+			.speedT_30 { left: 35.4%; top: 39.5%; }
+			.speedT_35 { left: 33.9%; top: 38.3%; }
+			.speedT_40 { left: 32.6%; top: 36.9%; }
+			.speedT_45 { left: 31.7%; top: 35.3%; }
+			.speedT_50 { left: 31.1%; top: 33.7%; }
+			.speedT_55 { left: 30.8%; top: 32%; }		
+			.speedT_60 { left: 31%; top: 30.3%; }
+			.speedT_65 { left: 31.7%; top: 28.5%; }
+			.speedT_70 { left: 32.7%; top: 27.2%; }
+			.speedT_75 { left: 34%; top: 25.7%; }
+			.speedT_80 { left: 35.5%; top: 24.5%; }
+			.speedT_85 { left: 37.2%; top: 23.3%; }
+			.speedT_90 { left: 39%; top: 22.4%; }
+			.speedT_95 { left: 41%; top: 21.6%; }
+			.speedT_100 { left: 43%; top: 20.9%; }
+			.speedT_105 { left: 45%; top: 20.3%; }
+			.speedT_110 { left: 46.9%; top: 20%; }
+			.speedT_115 { left: 48.9%; top: 19.6%; }
+			.speedT_120 { left: 50.9%; top: 19.4%; }
+			.speedT_125 { left: 52.8%; top: 19.3%; }
+			.speedT_130 { left: 54.8%; top: 19.2%; }
+			.speedT_135 { left: 56.8%; top: 19.2%; }
+			.speedT_140 { left: 58.8%; top: 19.4%; }
+			.speedT_145 { left: 60.9%; top: 19.6%; }
+			.speedT_150 { left: 62.7%; top: 19.9%; }
+			.speedT_155 { left: 64.7%; top: 20.2%; }
+			.speedT_160 { left: 66.8%; top: 20.9%; }
+			.speedT_165 { left: 68.7%; top: 21.5%; }
+			.speedT_170 { left: 70.7%; top: 22.4%; }
+			.speedT_175 { left: 72.5%; top: 23.3%; }
+			.speedT_180 { left: 74.2%; top: 24.5%; }
+			.speedT_185 { left: 75.8%; top: 25.7%; }
+			.speedT_190 { left: 77.1%; top: 27.1%; }
+			.speedT_195 { left: 78%; top: 28.6%; }
+			.speedT_200 { left: 78.6%; top: 30.3%; }
+			.speedT_205 { left: 78.9%; top: 32%; }
+			.speedT_210 { left: 78.6%; top: 33.7%; }
+			.speedT_215 { left: 78%; top: 35.3%; }
+			.speedT_220 { left: 77.1%; top: 36.8%; }
+			.speedT_225 { left: 75.8%; top: 38.2%; }
+			.speedT_230 { left: 74.2%; top: 39.5%; }
+			.speedT_235 { left: 72.5%; top: 40.6%; }
+			.speedT_240 { left: 70.7%; top: 41.5%; }
+			.speedT_245 { left: 68.8%; top: 42.4%; }
+			.speedT_250 { left: 66.8%; top: 43%; }
+			.speedT_255 { left: 64.8%; top: 43.6%; }
+			.speedT_260 { left: 62.8%; top: 44%; }
+
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/KLUB_v3.png" alt="vegetables">
+            <div class="speed">000</div>
+            <div class="speedLimit">0110</div>
+            <div class="tm">tm</div>
+            <div class="ur">ur</div>
+            <div class="ek">ЭК</div>
+            <div class="np">1ПР</div>
+            <div class="uscr">0.1</div>
+            <div class="coordinate">1231234</div>
+            <div class="time">12:12:12</div>
+            <div class="distance">1234</div>
+            <div class="svetofor">СВЕТОФОР</div>
+            <div class="signal"></div>
+            <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/vigilance.PNG" alt="vigillance" class="vigillance" id="vigilanceImg">
+            <div class="speedometer">
+                <div class="speeds">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_0" class="speed_m speed_0">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_5" class="speed_m speed_5">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_10" class="speed_m speed_10">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_15" class="speed_m speed_15">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_20" class="speed_m speed_20">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_25" class="speed_m speed_25">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_30" class="speed_m speed_30">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_35" class="speed_m speed_35">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_40" class="speed_m speed_40">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_45" class="speed_m speed_45">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_50" class="speed_m speed_50">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_55" class="speed_m speed_55">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_60" class="speed_m speed_60">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_65" class="speed_m speed_65">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_70" class="speed_m speed_70">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_75" class="speed_m speed_75">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_80" class="speed_m speed_80">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_85" class="speed_m speed_85">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_90" class="speed_m speed_90">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_95" class="speed_m speed_95">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_100" class="speed_m speed_100">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_105" class="speed_m speed_105">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_110" class="speed_m speed_110">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_115" class="speed_m speed_115">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_120" class="speed_m speed_120">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_125" class="speed_m speed_125">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_130" class="speed_m speed_130">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_135" class="speed_m speed_135">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_140" class="speed_m speed_140">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_145" class="speed_m speed_145">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_150" class="speed_m speed_150">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_155" class="speed_m speed_155">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_160" class="speed_m speed_160">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_165" class="speed_m speed_165">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_170" class="speed_m speed_170">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_175" class="speed_m speed_175">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_180" class="speed_m speed_180">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_185" class="speed_m speed_185">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_190" class="speed_m speed_190">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_195" class="speed_m speed_195">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_200" class="speed_m speed_200">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_205" class="speed_m speed_205">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_210" class="speed_m speed_210">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_215" class="speed_m speed_215">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_220" class="speed_m speed_220">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_225" class="speed_m speed_225">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_230" class="speed_m speed_230">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_235" class="speed_m speed_235">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_240" class="speed_m speed_240">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_245" class="speed_m speed_245">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_250" class="speed_m speed_250">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_255" class="speed_m speed_255">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speed_260" class="speed_m speed_260">
+                </div>
+                <div class="speedLimits">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_0" class="speedL_m speedL_0">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_5" class="speedL_m speedL_5">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_10" class="speedL_m speedL_10">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_15" class="speedL_m speedL_15">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_20" class="speedL_m speedL_20">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_25" class="speedL_m speedL_25">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_30" class="speedL_m speedL_30">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_35" class="speedL_m speedL_35">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_40" class="speedL_m speedL_40">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_45" class="speedL_m speedL_45">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_50" class="speedL_m speedL_50">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_55" class="speedL_m speedL_55">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_60" class="speedL_m speedL_60">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_65" class="speedL_m speedL_65">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_70" class="speedL_m speedL_70">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_75" class="speedL_m speedL_75">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_80" class="speedL_m speedL_80">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_85" class="speedL_m speedL_85">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_90" class="speedL_m speedL_90">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_95" class="speedL_m speedL_95">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_100" class="speedL_m speedL_100">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_105" class="speedL_m speedL_105">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_110" class="speedL_m speedL_110">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_115" class="speedL_m speedL_115">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_120" class="speedL_m speedL_120">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_125" class="speedL_m speedL_125">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_130" class="speedL_m speedL_130">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_135" class="speedL_m speedL_135">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_140" class="speedL_m speedL_140">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_145" class="speedL_m speedL_145">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_150" class="speedL_m speedL_150">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_155" class="speedL_m speedL_155">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_160" class="speedL_m speedL_160">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_165" class="speedL_m speedL_165">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_170" class="speedL_m speedL_170">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_175" class="speedL_m speedL_175">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_180" class="speedL_m speedL_180">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_185" class="speedL_m speedL_185">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_190" class="speedL_m speedL_190">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_195" class="speedL_m speedL_195">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_200" class="speedL_m speedL_200">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_205" class="speedL_m speedL_205">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_210" class="speedL_m speedL_210">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_215" class="speedL_m speedL_215">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_220" class="speedL_m speedL_220">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_225" class="speedL_m speedL_225">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_230" class="speedL_m speedL_230">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_235" class="speedL_m speedL_235">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_240" class="speedL_m speedL_240">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_245" class="speedL_m speedL_245">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_250" class="speedL_m speedL_250">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_255" class="speedL_m speedL_255">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot-limit.png" alt="speedL_260" class="speedL_m speedL_260">
+                </div>
+                <div class="targetSpeeds">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_0" class="speedT_m speedT_0">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_5" class="speedT_m speedT_5">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_10" class="speedT_m speedT_10">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_15" class="speedT_m speedT_15">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_20" class="speedT_m speedT_20">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_25" class="speedT_m speedT_25">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_30" class="speedT_m speedT_30">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_35" class="speedT_m speedT_35">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_40" class="speedT_m speedT_40">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_45" class="speedT_m speedT_45">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_50" class="speedT_m speedT_50">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_55" class="speedT_m speedT_55">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_60" class="speedT_m speedT_60">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_65" class="speedT_m speedT_65">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_70" class="speedT_m speedT_70">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_75" class="speedT_m speedT_75">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_80" class="speedT_m speedT_80">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_85" class="speedT_m speedT_85">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_90" class="speedT_m speedT_90">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_95" class="speedT_m speedT_95">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_100" class="speedT_m speedT_100">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_105" class="speedT_m speedT_105">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_110" class="speedT_m speedT_110">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_115" class="speedT_m speedT_115">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_120" class="speedT_m speedT_120">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_125" class="speedT_m speedT_125">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_130" class="speedT_m speedT_130">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_135" class="speedT_m speedT_135">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_140" class="speedT_m speedT_140">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_145" class="speedT_m speedT_145">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_150" class="speedT_m speedT_150">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_155" class="speedT_m speedT_155">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_160" class="speedT_m speedT_160">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_165" class="speedT_m speedT_165">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_170" class="speedT_m speedT_170">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_175" class="speedT_m speedT_175">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_180" class="speedT_m speedT_180">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_185" class="speedT_m speedT_185">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_190" class="speedT_m speedT_190">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_195" class="speedT_m speedT_195">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_200" class="speedT_m speedT_200">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_205" class="speedT_m speedT_205">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_210" class="speedT_m speedT_210">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_215" class="speedT_m speedT_215">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_220" class="speedT_m speedT_220">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_225" class="speedT_m speedT_225">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_230" class="speedT_m speedT_230">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_235" class="speedT_m speedT_235">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_240" class="speedT_m speedT_240">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_245" class="speedT_m speedT_245">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_250" class="speedT_m speedT_250">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_255" class="speedT_m speedT_255">
+                    <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/dot.png" alt="speedT_260" class="speedT_m speedT_260">
+                </div>
+            <img src="https://raw.githubusercontent.com/roflandev/zdklub-mobile/main/kasseta.png" alt="kasseta" class="kasseta" id="kassetaIMG">
+                <div class="mode">М</div>
+                <div class="station">RailDriver</div>
+                <div class="als-rectangle"></div>
+        </div>
+        <script>
+const _0x3bb9=['time','.speedL_','tc_pressure','className','querySelectorAll','top','.speedT_','none','prototype','forEach','station','50015vdkBAq','^([^\x20]+(\x20+[^\x20]+)+)+[^\x20]}','.np','length','constructor','Error\x20fetching\x20data:','return\x20(function()\x20','.speedT_m','round','test','.tm','speed','color_class','target_speed','error','blink','getElementById','717973QQinBO','vigilanceImg','.time','__proto__','info','{}.constructor(\x22return\x20this\x22)(\x20)','.distance','speed_limit','als-rectangle\x20','return\x20/\x22\x20+\x20this\x20+\x20\x22/','8FxhKNn','remove','toString','toFixed','.uscr','block','247624ntoDAm','then','8.7%','apply','26hmfbRV','1115107yIBNdu','style','display','.speed_','table','log','trace','coordinate','catch','bind','.coordinate','181LowYuh','kasseta','textContent','classList','querySelector','.speedLimit','4.5%','2298fUgQTj','000','8.8%','acceleration','365APDUmi','ur_pressure','mode','tm_pressure','add','console','.ur','222046GJUZdx','.speedL_m','.speed','4BKFUkM','.station','exception'];const _0x4308=function(_0x60d098,_0x5e48d5){_0x60d098=_0x60d098-0xac;let _0x56b229=_0x3bb9[_0x60d098];return _0x56b229;};(function(_0x55753a,_0xf249e0){const _0x5b2459=_0x4308;while(!![]){try{const _0xdd6116=parseInt(_0x5b2459(0xb8))*-parseInt(_0x5b2459(0xd5))+-parseInt(_0x5b2459(0xae))+parseInt(_0x5b2459(0xe0))*parseInt(_0x5b2459(0xe3))+parseInt(_0x5b2459(0xd9))*parseInt(_0x5b2459(0xce))+parseInt(_0x5b2459(0xc2))*parseInt(_0x5b2459(0xf1))+parseInt(_0x5b2459(0xbe))+-parseInt(_0x5b2459(0xc3));if(_0xdd6116===_0xf249e0)break;else _0x55753a['push'](_0x55753a['shift']());}catch(_0x1360ee){_0x55753a['push'](_0x55753a['shift']());}}}(_0x3bb9,0x9ee2f));const _0x2e79e7=function(){let _0x58225a=!![];return function(_0x440fdc,_0x1a29ae){const _0x40056c=_0x58225a?function(){const _0x4c8265=_0x4308;if(_0x1a29ae){const _0x223d98=_0x1a29ae[_0x4c8265(0xc1)](_0x440fdc,arguments);return _0x1a29ae=null,_0x223d98;}}:function(){};return _0x58225a=![],_0x40056c;};}(),_0x36f54b=_0x2e79e7(this,function(){const _0x274d4f=function(){const _0x48918f=_0x4308,_0x50c324=_0x274d4f[_0x48918f(0xf5)](_0x48918f(0xb7))()['constructor'](_0x48918f(0xf2));return!_0x50c324[_0x48918f(0xfa)](_0x36f54b);};return _0x274d4f();});_0x36f54b();const _0x54512c=function(){let _0x52b727=!![];return function(_0x25b900,_0x2bce6d){const _0x5f3498=_0x52b727?function(){if(_0x2bce6d){const _0x374fac=_0x2bce6d['apply'](_0x25b900,arguments);return _0x2bce6d=null,_0x374fac;}}:function(){};return _0x52b727=![],_0x5f3498;};}(),_0x180fb7=_0x54512c(this,function(){const _0xfc8695=_0x4308;let _0x4be20f;try{const _0x1fb57a=Function(_0xfc8695(0xf7)+_0xfc8695(0xb3)+');');_0x4be20f=_0x1fb57a();}catch(_0x3d4a37){_0x4be20f=window;}const _0x1ff03c=_0x4be20f['console']=_0x4be20f[_0xfc8695(0xde)]||{},_0x1a073c=[_0xfc8695(0xc8),'warn',_0xfc8695(0xb2),_0xfc8695(0xff),_0xfc8695(0xe5),_0xfc8695(0xc7),_0xfc8695(0xc9)];for(let _0x11c4d8=0x0;_0x11c4d8<_0x1a073c[_0xfc8695(0xf4)];_0x11c4d8++){const _0xcb61ec=_0x54512c[_0xfc8695(0xf5)][_0xfc8695(0xee)][_0xfc8695(0xcc)](_0x54512c),_0xbc1b61=_0x1a073c[_0x11c4d8],_0x3b7ca4=_0x1ff03c[_0xbc1b61]||_0xcb61ec;_0xcb61ec[_0xfc8695(0xb1)]=_0x54512c['bind'](_0x54512c),_0xcb61ec[_0xfc8695(0xba)]=_0x3b7ca4['toString']['bind'](_0x3b7ca4),_0x1ff03c[_0xbc1b61]=_0xcb61ec;}});_0x180fb7();let k123=![],k81=![],globalData={};function updateData(){const _0xd2d70a=_0x4308;fetch('/data')[_0xd2d70a(0xbf)](_0xef6a3c=>_0xef6a3c['json']())[_0xd2d70a(0xbf)](_0x3f2401=>{const _0x24c647=_0xd2d70a;globalData=_0x3f2401;let _0x1402cd=document[_0x24c647(0xd2)](_0x24c647(0xe2)),_0x59812e=document[_0x24c647(0xd2)](_0x24c647(0xd3)),_0x2703a4=document[_0x24c647(0xd2)]('.als-rectangle'),_0x5df6d5=document[_0x24c647(0xd2)]('.vigillance'),_0x33ebdb=document['querySelector'](_0x24c647(0xf3));_0x1402cd['textContent']=_0x3f2401[_0x24c647(0xfc)],_0x59812e[_0x24c647(0xd0)]=_0x3f2401['speed_limit'],updateSpeedImages(Number(_0x3f2401['speed'])),updateSpeedLimitImages(Number(_0x3f2401[_0x24c647(0xb5)]));if(_0x3f2401['pp']==0x0)_0x33ebdb['textContent']=_0x3f2401['np']+'НП';else _0x33ebdb[_0x24c647(0xd0)]=_0x3f2401['np']+'ПР';if(_0x3f2401['vigillance']==0x0)document['getElementById'](_0x24c647(0xaf))[_0x24c647(0xc4)][_0x24c647(0xc5)]=_0x24c647(0xbd);else document['getElementById'](_0x24c647(0xaf))[_0x24c647(0xc4)][_0x24c647(0xc5)]='none';if(_0x3f2401[_0x24c647(0xcf)]==0x1)document[_0x24c647(0xad)]('kassetaIMG')[_0x24c647(0xc4)][_0x24c647(0xc5)]=_0x24c647(0xbd);else document[_0x24c647(0xad)]('kassetaIMG')['style'][_0x24c647(0xc5)]=_0x24c647(0xed);if(_0x3f2401[_0x24c647(0xdb)]==0x0)updateSpeedTargetImages(_0x3f2401[_0x24c647(0xfe)]);else updateSpeedTargetImages(0x0);let _0x5ba5bf=Number(_0x3f2401[_0x24c647(0xfc)]);!isNaN(_0x5ba5bf)&&(_0x3f2401[_0x24c647(0xb5)]===_0x24c647(0xd6)||Number(_0x3f2401[_0x24c647(0xfc)])>Number(_0x3f2401[_0x24c647(0xb5)])-0x3)?(console[_0x24c647(0xc8)](0x2f5b),_0x1402cd[_0x24c647(0xd1)][_0x24c647(0xdd)](_0x24c647(0xac))):_0x1402cd[_0x24c647(0xd1)]['remove'](_0x24c647(0xac));_0x3f2401[_0x24c647(0xb5)]===_0x24c647(0xd6)?(_0x59812e[_0x24c647(0xc4)]['display']=_0x24c647(0xed),_0x2703a4['style']['display']=_0x24c647(0xed)):(_0x59812e[_0x24c647(0xc4)]['display']=_0x24c647(0xbd),_0x2703a4[_0x24c647(0xc4)]['display']='block');let _0xce7c56,_0xd5a899;k81?!k123?_0xce7c56=(parseFloat(_0x3f2401[_0x24c647(0xe8)])/0xa)[_0x24c647(0xbb)](0x2):_0xce7c56=_0x3f2401[_0x24c647(0xe8)]:k123?(_0xce7c56=(parseFloat(_0x3f2401[_0x24c647(0xdc)])/0xa)[_0x24c647(0xbb)](0x2),_0xd5a899=(parseFloat(_0x3f2401[_0x24c647(0xda)])/0xa)[_0x24c647(0xbb)](0x2)):(_0xce7c56=_0x3f2401[_0x24c647(0xdc)],_0xd5a899=_0x3f2401[_0x24c647(0xda)]);document[_0x24c647(0xd2)](_0x24c647(0xfb))[_0x24c647(0xd0)]=_0xce7c56;_0xd5a899!==undefined&&(document['querySelector'](_0x24c647(0xdf))['textContent']=_0xd5a899);document[_0x24c647(0xd2)](_0x24c647(0xcd))['textContent']=_0x3f2401[_0x24c647(0xca)],document[_0x24c647(0xd2)](_0x24c647(0xb0))['textContent']=_0x3f2401[_0x24c647(0xe6)],document[_0x24c647(0xd2)](_0x24c647(0xb4))[_0x24c647(0xd0)]=_0x3f2401['distance'],document['querySelector'](_0x24c647(0xbc))[_0x24c647(0xd0)]=_0x3f2401[_0x24c647(0xd8)],document['querySelector'](_0x24c647(0xe4))[_0x24c647(0xd0)]=_0x3f2401[_0x24c647(0xf0)],_0x2703a4[_0x24c647(0xe9)]=_0x24c647(0xb6)+_0x3f2401[_0x24c647(0xfd)];let _0x39b19d=document[_0x24c647(0xd2)]('.mode');switch(_0x3f2401[_0x24c647(0xdb)]){case 0x2:_0x39b19d[_0x24c647(0xd0)]='П',_0x39b19d[_0x24c647(0xd1)]['add'](_0x24c647(0xac)),_0x39b19d[_0x24c647(0xc4)][_0x24c647(0xeb)]=_0x24c647(0xd7);break;case 0x1:_0x39b19d[_0x24c647(0xd0)]='М',_0x39b19d['classList'][_0x24c647(0xb9)](_0x24c647(0xac)),_0x39b19d[_0x24c647(0xc4)]['top']=_0x24c647(0xd4);break;case 0x0:_0x39b19d[_0x24c647(0xd0)]='П',_0x39b19d['classList']['remove'](_0x24c647(0xac)),_0x39b19d[_0x24c647(0xc4)][_0x24c647(0xeb)]=_0x24c647(0xc0);break;default:_0x39b19d[_0x24c647(0xd0)]='',_0x39b19d['classList'][_0x24c647(0xb9)](_0x24c647(0xac)),_0x39b19d[_0x24c647(0xc4)][_0x24c647(0xeb)]='5.4%';break;}})[_0xd2d70a(0xcb)](_0x5e31b5=>console[_0xd2d70a(0xff)](_0xd2d70a(0xf6),_0x5e31b5));}setInterval(updateData,0x64);function updateSpeedImages(_0x2ddeff){const _0xa9fec3=_0x4308;document[_0xa9fec3(0xea)]('.speed_m')[_0xa9fec3(0xef)](_0x2419e5=>_0x2419e5[_0xa9fec3(0xc4)]['display']=_0xa9fec3(0xed));for(let _0x2e1e41=0x0;_0x2e1e41<=_0x2ddeff;_0x2e1e41+=0x5){let _0x2c122a=document['querySelector'](_0xa9fec3(0xc6)+_0x2e1e41);_0x2c122a&&(_0x2c122a[_0xa9fec3(0xc4)][_0xa9fec3(0xc5)]='block');}}function updateSpeedLimitImages(_0x252187){const _0x5098dc=_0x4308;let _0x952eea=Math[_0x5098dc(0xf9)](_0x252187/0x5)*0x5;document[_0x5098dc(0xea)](_0x5098dc(0xe1))[_0x5098dc(0xef)](_0x3d442e=>_0x3d442e[_0x5098dc(0xc4)]['display']=_0x5098dc(0xed));let _0x16cfe7=document[_0x5098dc(0xd2)](_0x5098dc(0xe7)+_0x952eea);_0x16cfe7&&(_0x16cfe7[_0x5098dc(0xc4)][_0x5098dc(0xc5)]=_0x5098dc(0xbd));}function updateSpeedTargetImages(_0x4970a3){const _0xcf0c3c=_0x4308;let _0x156fd9=Math['round'](_0x4970a3/0x5)*0x5;document[_0xcf0c3c(0xea)](_0xcf0c3c(0xf8))[_0xcf0c3c(0xef)](_0xb2092b=>_0xb2092b[_0xcf0c3c(0xc4)][_0xcf0c3c(0xc5)]='none');let _0x54d71d=document[_0xcf0c3c(0xd2)](_0xcf0c3c(0xec)+_0x156fd9);_0x54d71d&&(_0x54d71d[_0xcf0c3c(0xc4)][_0xcf0c3c(0xc5)]='block');}
+                </script>
+    </body>
+    </html>
